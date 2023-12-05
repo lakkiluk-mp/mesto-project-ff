@@ -1,34 +1,30 @@
 
-const AllPopUP = document.querySelectorAll(".popup");
-// крестик popup
-const PopUpClose = document.querySelectorAll(".popup__close");
+const allPopUP = document.querySelectorAll(".popup");
+
 
 //функция открытия окна + навешиваем обработчик удаления по ESC + навешиваем обработчик удаления по крестику
-function OpenPopUp(DOM) {
-  DOM.classList.add("popup_is-opened");
-  document.addEventListener("keydown", EcsRemov);
-  PopUpClose.forEach((el) => el.addEventListener("click", ClosePopUp));
+function openPopUp(el) {
+  el.classList.add("popup_is-opened");
+  document.addEventListener("keydown", closePopupByEsc);
 }
 // функция закрытия окна + снимаем  обработчик удаления по ESC + снимаем обработчик удаления по крестику
-function ClosePopUp() {
-AllPopUP.forEach((el) => el.classList.remove("popup_is-opened"));
-  document.removeEventListener("keydown", EcsRemov);
-  AllPopUP.forEach((el) => el.removeEventListener("click", ClosePopUp));
+function closePopUp(el) {
+  el.classList.remove("popup_is-opened");
+  document.removeEventListener("keydown", closePopupByEsc);
 }
 
 // функция закрытия окна по ESC
-function EcsRemov(evt) {
+function closePopupByEsc(evt) {
   if (evt.key === "Escape") {
-    ClosePopUp();
+    closePopUp(document.querySelector('.popup_is-opened'));
   }
 }
 
-//функция закрыте окна по оверлей
-
-function Overlay(el,evt) {
-  if (!el.querySelector(".popup__content").contains(evt.target)) {
-    ClosePopUp();
+//функция закрыте окна по оверлей или крестику
+function closePopupInOverlayCross(evt) {
+  if (evt.target.classList.contains('popup_is-opened')||evt.target.classList.contains('popup__close')) {
+    closePopUp(document.querySelector('.popup_is-opened'));;
   }
 }
 
-export {AllPopUP,OpenPopUp, ClosePopUp, EcsRemov,Overlay};
+export {allPopUP ,openPopUp ,closePopUp , closePopupByEsc ,closePopupInOverlayCross as closePopupByOverlay};

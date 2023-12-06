@@ -1,35 +1,32 @@
-import { openPopUp } from "./modal.js";
 
 // добавления темплейта в дом
 const cardTemplate = document.querySelector("#card-template").content;
 // добавление в дом места в разметке куда будут добавляться карточки
 const cardContainer = document.querySelector(".places__list");
 
-//кнопка
-// const cardLike = document.querySelector('.card__like-button')
-
-// открытие картинки pop-up DOM
-const popUpImage = document.querySelector(".popup_type_image");
-const cardImage = document.querySelector(".places__list");
-const currentUrl = document.querySelector(".popup__image");
-const currentAlt = document.querySelector(".popup__caption");
-
+const popUpImgUrl = document.querySelector(".popup__image");
+const popUpImgAlt = document.querySelector(".popup__caption");
 
 // функция создания карточки
-function createCard(cardsItem, handleCardDelete, addLiketoCard,) {
-  const cardElement = cardTemplate
-    .querySelector(".places__item.card")
-    .cloneNode(true);
-  cardElement.querySelector(".card__image").src = cardsItem.link;
-  cardElement.querySelector(".card__image").alt = cardsItem.name;
-  cardElement.querySelector(".card__title").textContent = cardsItem.name;
-  cardElement
-    .querySelector(".card__delete-button")
-    .addEventListener("click", handleCardDelete);
-  // добавление лайка
-  cardImage.addEventListener("click", addLiketoCard);
-  // открытие окна картинки
-  cardImage.addEventListener("click", assignCurrentImgSrc);
+function createCard(cardsItem, handleCardDelete, addLiketoCard, openPopupImage) {
+  const cardElement = cardTemplate.querySelector(".places__item.card").cloneNode(true);
+  const cardImage = cardElement.querySelector(".card__image");
+  const cardTitle = cardElement.querySelector(".card__title");
+  const cardDelButt = cardElement.querySelector(".card__delete-button");
+  const cardLikeButt = cardElement.querySelector(".card__like-button");
+  cardImage.src = cardsItem.link;
+  cardImage.alt = cardsItem.name;
+  cardTitle.textContent = cardsItem.name;
+
+  cardDelButt.addEventListener("click", handleCardDelete);
+  // добавление лайка по аналогу с удалением
+  cardLikeButt.addEventListener("click", addLiketoCard);
+  //добваление url и описание к popup + функции открытия
+  cardImage.addEventListener("click", () => {
+    popUpImgUrl.src = cardImage.src;
+    popUpImgAlt.textContent = cardImage.alt;
+    openPopupImage();
+  });
   return cardElement;
 }
 
@@ -48,18 +45,9 @@ function renderCardStart(cardElement) {
 }
 
 // добавление лайка и удаление функция
-function addLiketoCard(evt) {
-  if (evt.target.classList.contains("card__like-button"))
-    evt.target.classList.toggle("card__like-button_is-active");
-}
-
-// функция присвоения текущего url и alt при нажатии на картинку + открытие popup
-function assignCurrentImgSrc(evt) {
-  if (evt.target.classList.contains("card__image")) {
-    currentUrl.src = evt.target.src;
-    currentAlt.textContent = evt.target.alt;
-    openPopUp(popUpImage);
-  }
+function addLiketoCard(element) {
+  const like = element.target.closest(".card__like-button");
+  like.classList.toggle("card__like-button_is-active");
 }
 
 export {
@@ -68,9 +56,4 @@ export {
   renderCard,
   renderCardStart,
   addLiketoCard,
-  popUpImage
 };
-
-
-
-

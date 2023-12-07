@@ -1,6 +1,6 @@
 import "./pages/index.css";
 import { initialCards } from "./scripts/cards.js";
-import {createCard, handleCardDelete, renderCard, renderCardStart, addLiketoCard} from "./scripts/card.js";
+import {createCard, handleCardDelete, renderCard, renderCardStart, addDeletLikeToCard } from "./scripts/card.js";
 import { openModal, closeModal } from "./scripts/modal.js";
 
 // редактирование шапки pop-up DOM
@@ -13,7 +13,8 @@ const addCardButton = document.querySelector(".profile__add-button");
 
 //добавление popup картинки
 const popUpImage = document.querySelector(".popup_type_image");
-
+const popUpImgUrl = document.querySelector(".popup__image");
+const popUpImgAlt = document.querySelector(".popup__caption");
 //добавление плавности при открытии
 popupTypeEdit.classList.add("popup_is-animated");
 popNewCard.classList.add("popup_is-animated");
@@ -25,11 +26,14 @@ profileEditButton.addEventListener("click", () => {
   fillPopupEditInputs();
 });
 
-// открытие окна добавления карточки
+//открытие окна добавления карточки
 addCardButton.addEventListener("click", () => openModal(popNewCard));
 
 //функция открытия окна с картинкой
-function openPopupImage() {
+function openPopupImage(link,name) {
+  popUpImgUrl.src = link;
+  popUpImgUrl.alt = name; 
+  popUpImgAlt.textContent = name;
   openModal(popUpImage);
 }
 
@@ -52,7 +56,7 @@ function handleEditFormSubmit(evt) {
   evt.preventDefault();
   currentName.textContent = nameInput.value;
   currentJob.textContent = jobInput.value;
-  closeModal(document.querySelector(".popup_is-opened"));
+  closeModal(popupTypeEdit);
 }
 
 popupTypeEdit.addEventListener("submit", handleEditFormSubmit);
@@ -66,15 +70,15 @@ const cardUrlInput = popNewCard.querySelector(".popup__input_type_url");
 function submitCardForm(evt) {
   evt.preventDefault();
   const newObj = { name: cardNameInput.value, link: cardUrlInput.value };
-  closeModal(document.querySelector(".popup_is-opened"));
+  closeModal(popNewCard);
   cardForm.reset(evt);
   renderCardStart(
-    createCard(newObj, handleCardDelete, addLiketoCard, openPopupImage)
+    createCard(newObj, handleCardDelete, addDeletLikeToCard, openPopupImage)
   );
 }
 
 popNewCard.addEventListener("submit", submitCardForm);
 
 initialCards.forEach((card) => {
-  renderCard(createCard(card, handleCardDelete, addLiketoCard, openPopupImage));
+  renderCard(createCard(card, handleCardDelete, addDeletLikeToCard, openPopupImage));
 });

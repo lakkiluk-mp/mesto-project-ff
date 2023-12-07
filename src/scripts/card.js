@@ -4,11 +4,9 @@ const cardTemplate = document.querySelector("#card-template").content;
 // добавление в дом места в разметке куда будут добавляться карточки
 const cardContainer = document.querySelector(".places__list");
 
-const popUpImgUrl = document.querySelector(".popup__image");
-const popUpImgAlt = document.querySelector(".popup__caption");
 
 // функция создания карточки
-function createCard(cardsItem, handleCardDelete, addLiketoCard, openPopupImage) {
+function createCard(cardsItem, handleCardDelete, addDeletLiketoCard, openPopupImage) {
   const cardElement = cardTemplate.querySelector(".places__item.card").cloneNode(true);
   const cardImage = cardElement.querySelector(".card__image");
   const cardTitle = cardElement.querySelector(".card__title");
@@ -20,12 +18,10 @@ function createCard(cardsItem, handleCardDelete, addLiketoCard, openPopupImage) 
 
   cardDelButt.addEventListener("click", handleCardDelete);
   // добавление лайка по аналогу с удалением
-  cardLikeButt.addEventListener("click", addLiketoCard);
-  //добваление url и описание к popup + функции открытия
+  cardLikeButt.addEventListener("click", addDeletLiketoCard);
+  //добавление обработчика открытия картинки, передача url,alt
   cardImage.addEventListener("click", () => {
-    popUpImgUrl.src = cardImage.src;
-    popUpImgAlt.textContent = cardImage.alt;
-    openPopupImage();
+    openPopupImage(cardImage.src,cardImage.alt);
   });
   return cardElement;
 }
@@ -45,7 +41,7 @@ function renderCardStart(cardElement) {
 }
 
 // добавление лайка и удаление функция
-function addLiketoCard(element) {
+function addDeletLikeToCard(element) {
   const like = element.target.closest(".card__like-button");
   like.classList.toggle("card__like-button_is-active");
 }
@@ -55,5 +51,5 @@ export {
   handleCardDelete,
   renderCard,
   renderCardStart,
-  addLiketoCard,
+  addDeletLikeToCard
 };

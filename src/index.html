@@ -52,6 +52,7 @@
                 maxlength="40"
                 pattern="^[a-zA-Zа-яА-Я\s\-]+$"
                 data-error-message="Разрешены только латинские, и киррилические буквы, знаки дифиса и пробелы"
+                autocomplete="username"
               />
               <span class="form__input-error name-input-error"></span>
             </label>
@@ -66,7 +67,7 @@
                 minlength="2"
                 maxlength="200"
                 pattern="^[a-zA-Zа-яА-Я\s\-]+$"
-                data-error-message="Разрешены только латинские, и киррилические буквы, знаки дифиса и пробелы"
+                data-error-message="Разрешены только латинские и киррилические буквы, знаки дифиса и пробелы"
               />
               <span class="form__input-error description-input-error"></span>
             </label>
@@ -80,21 +81,34 @@
         <div class="popup__content">
           <button type="button" class="popup__close"></button>
           <h3 class="popup__title">Новое место</h3>
-          <form class="popup__form" name="new-place">
+          
+          <form class="popup__form" name="new-place" novalidate>
+            <label class="form_field">
             <input
+              id="new-place-input"
               type="text"
               name="place-name"
               class="popup__input popup__input_type_card-name"
               placeholder="Название"
+              minlength="2"
+              maxlength="30"
+              pattern="^[a-zA-Zа-яА-Я\s\-]+$"
+              data-error-message="Разрешены только латинские и киррилические буквы, знаки дифиса и пробелы"
               required
             />
+            <span class="form__input-error new-place-input-error"></span>
+          </label>
+          <label class="form_field">
             <input
+              id ='link-input'
               type="url"
               name="link"
               class="popup__input popup__input_type_url"
               placeholder="Ссылка на картинку"
               required
             />
+            <span class="form__input-error link-input-error"></span>
+          </label>
             <button type="submit" class="button popup__button">
               Сохранить
             </button>

@@ -8,7 +8,7 @@ import {
   addDeletLikeToCard,
 } from "./scripts/card.js";
 import { openModal, closeModal } from "./scripts/modal.js";
-
+import { enableValidation, clearValidation } from "./scripts/validation.js";
 // редактирование шапки pop-up DOM
 const popupTypeEdit = document.querySelector(".popup_type_edit");
 const profileEditButton = document.querySelector(".profile__edit-button");
@@ -30,10 +30,16 @@ popUpImage.classList.add("popup_is-animated");
 profileEditButton.addEventListener("click", () => {
   openModal(popupTypeEdit);
   fillPopupEditInputs();
+  enableValidation(validationConfig);
+  clearValidation(popupTypeEdit, validationConfig);
 });
 
 //открытие окна добавления карточки
-addCardButton.addEventListener("click", () => openModal(popNewCard));
+addCardButton.addEventListener("click", () => {
+  openModal(popNewCard);
+  enableValidation(validationConfig);
+
+});
 
 //функция открытия окна с картинкой
 function openPopupImage(link, name) {
@@ -68,7 +74,7 @@ function handleEditFormSubmit(evt) {
 popupTypeEdit.addEventListener("submit", handleEditFormSubmit);
 
 // DOM поля формы добавление карточки
-const formElement = popNewCard.querySelector(".popup__form");
+const formCard = popNewCard.querySelector(".popup__form");
 const cardNameInput = popNewCard.querySelector(".popup__input_type_card-name");
 const cardUrlInput = popNewCard.querySelector(".popup__input_type_url");
 
@@ -77,7 +83,8 @@ function submitCardForm(evt) {
   evt.preventDefault();
   const newObj = { name: cardNameInput.value, link: cardUrlInput.value };
   closeModal(popNewCard);
-  formElement.reset(evt);
+  formCard.reset(evt);
+  clearValidation(popNewCard, validationConfig);
   renderCardStart(
     createCard(newObj, handleCardDelete, addDeletLikeToCard, openPopupImage)
   );
@@ -93,79 +100,11 @@ initialCards.forEach((card) => {
 
 ////////////////
 
-
-//проверка на ошибки, вызов error полей 
-function isValid(formElement, inputElement) {
-  if (inputElement.validity.patternMismatch) {
-    inputElement.setCustomValidity(inputElement.dataset.errorMessage);
-    console.log(inputElement.dataset.errorMessage);
-  } else {
-    inputElement.setCustomValidity("");
-  }
-  if (!inputElement.validity.valid) {
-    showInputError(formElement, inputElement, inputElement.validationMessage);
-  } else {
-    hideInputError(formElement, inputElement);
-  }
-}
-
-// показывает span ошибки 
-function showInputError(formElement, inputElement, errMessage) {
-  const formError = formElement.querySelector(`.${inputElement.id}-error`);
-
-  inputElement.classList.add("popup__input_error");
-  formError.classList.add("popup__input_error-active");
-  formError.textContent = errMessage;
-}
-
-//скрывает span ошибки 
-function hideInputError(formElement, inputElement) {
-  const formError = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.remove("popup__input_error");
-  formError.classList.remove("popup__input_error-active");
-  formError.textContent = "";
-}
-
-//проверяет все поля на ошибки 
-const hasInvalidInput = (inputList) => {
-  return inputList.some((inputElement) => {
-    return !inputElement.validity.valid;
-  });
+const validationConfig = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_inactive",
+  inputErrorClass: "popup__input_error",
+  errorClass: "popup__input_error-active",
 };
-
-// деляет кнопку inactive если хоть в одном поле ошибка 
-const toggleButtonState = (inputList, buttonElement) => {
-  if (hasInvalidInput(inputList)) {
-    buttonElement.disabled = true;
-    buttonElement.classList.add("popup__button_inactive");
-  } else {
-    buttonElement.disabled = false;
-    buttonElement.classList.remove("popup__button_inactive");
-  }
-};
-
-// добавления обработчика валидации всем полям ввода
-const setEventListeners = (formElement) => {
-  const inputList = Array.from(formElement.querySelectorAll(".popup__input"));
-  const buttonElement = formElement.querySelector(".popup__button");
-  //toggleButtonState(inputList,buttonElement)
-  inputList.forEach((inputElement) => {
-    inputElement.addEventListener("input", () => {
-      isValid(formElement, inputElement);
-      toggleButtonState(inputList, buttonElement);
-    });
-  });
-};
-
-
-// добавления обработчика валидации всем формам
-const enableValidation = () => {
-  const formList = Array.from(document.querySelectorAll(".popup__form"));
-  formList.forEach((formElement) => {
-    formElement.addEventListener("submit", function (evt) {
-      evt.preventDefault();
-    });
-    setEventListeners(formElement);
-  });
-};
-enableValidation();

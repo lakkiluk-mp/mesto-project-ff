@@ -4,17 +4,22 @@ const cardTemplate = document.querySelector("#card-template").content;
 // добавление в дом места в разметке куда будут добавляться карточки
 const cardContainer = document.querySelector(".places__list");
 
-
 // функция создания карточки
-function createCard(cardsItem, handleCardDelete, addDeletLiketoCard, openPopupImage) {
+function createCard(cardsItem, handleCardDelete, addDeletLiketoCard, openPopupImage,userID,cardID) {
   const cardElement = cardTemplate.querySelector(".places__item.card").cloneNode(true);
   const cardImage = cardElement.querySelector(".card__image");
   const cardTitle = cardElement.querySelector(".card__title");
   const cardDelButt = cardElement.querySelector(".card__delete-button");
   const cardLikeButt = cardElement.querySelector(".card__like-button");
+
   cardImage.src = cardsItem.link;
   cardImage.alt = cardsItem.name;
   cardTitle.textContent = cardsItem.name;
+  // console.log(userID)
+  // console.log(cardID)
+  if(userID!==cardID){
+     cardDelButt.remove() 
+  }
 
   cardDelButt.addEventListener("click", handleCardDelete);
   // добавление лайка по аналогу с удалением
@@ -23,7 +28,10 @@ function createCard(cardsItem, handleCardDelete, addDeletLiketoCard, openPopupIm
   cardImage.addEventListener("click", () => {
     openPopupImage(cardImage.src,cardImage.alt);
   });
+
+  
   return cardElement;
+
 }
 
 //функция удаления карточки
@@ -51,5 +59,6 @@ export {
   handleCardDelete,
   renderCard,
   renderCardStart,
-  addDeletLikeToCard
+  addDeletLikeToCard,
+  cardTemplate,
 };

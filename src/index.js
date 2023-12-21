@@ -100,6 +100,7 @@ function submitCardForm(evt) {
       handleCardDelete,
       addDeletLikeToCard,
       openPopupImage,
+      userID,
       userID
     )
   );
@@ -125,12 +126,20 @@ const validationConfig = {
   errorClass: "popup__input_error-active",
 };
 
+
+
+
+const config = {
+  baseUrl: 'https://mesto.nomoreparties.co/v1/wff-cohort-3',
+  headers: {
+    authorization: '0896f9f7-5274-4e46-b933-ae3efb20bf7b',
+    'Content-Type': 'application/json'
+  }
+}
 //обновление информации о пользователе
 function updateProfile() {
-  fetch("https://mesto.nomoreparties.co/v1/wff-cohort-3/users/me", {
-    headers: {
-      authorization: "0896f9f7-5274-4e46-b933-ae3efb20bf7b",
-    },
+  fetch(`${config.baseUrl}/users/me`, {
+    headers: config.headers
   })
     .then((res) => {
       return res.json();
@@ -140,7 +149,6 @@ function updateProfile() {
       currentJob.textContent = data.about;
       currentAvatar.style.backgroundImage = `url('${data.avatar}')`;
       userID = data._id;
-      console.log(userID);
     })
     .catch((err) => {
       console.log("Proeb1");
@@ -151,10 +159,8 @@ updateProfile();
 
 // Загрузка карточек  с сервера
 function getCards() {
-  fetch("https://mesto.nomoreparties.co/v1/wff-cohort-3/cards", {
-    headers: {
-      authorization: "0896f9f7-5274-4e46-b933-ae3efb20bf7b",
-    },
+  fetch(`${config.baseUrl}/cards`, {
+    headers: config.headers
   })
     .then((res) => {
       return res.json();
@@ -162,7 +168,7 @@ function getCards() {
 
     .then((data) => {
       data.forEach((card) => {
-
+console.log(card.owner._id)
         renderCard(
           createCard(
             card,
@@ -184,10 +190,8 @@ getCards();
 
 //отображение лайков
 function getCardsLike() {
-  return fetch("https://mesto.nomoreparties.co/v1/wff-cohort-3/cards", {
-    headers: {
-      authorization: "0896f9f7-5274-4e46-b933-ae3efb20bf7b",
-    },
+  fetch(`${config.baseUrl}/cards`, {
+    headers: config.headers
   })
     .then((res) => {
       return res.json();
@@ -204,14 +208,12 @@ function getCardsLike() {
 }
 getCardsLike();
 
+
 //Редактирование профиля
 function editProfile() {
-  fetch("https://mesto.nomoreparties.co/v1/wff-cohort-3/users/me", {
+fetch(`${config.baseUrl}/users/me`, {
     method: "PATCH",
-    headers: {
-      authorization: "0896f9f7-5274-4e46-b933-ae3efb20bf7b",
-      "Content-Type": "application/json",
-    },
+    headers: config.headers,
     body: JSON.stringify({
       name: nameInput.value,
       about: jobInput.value,
@@ -223,12 +225,9 @@ function editProfile() {
 
 //добавление новой карточки
 function addNewCard(cardObj) {
-  fetch("https://mesto.nomoreparties.co/v1/wff-cohort-3/cards", {
+fetch(`${config.baseUrl}/cards`, {
     method: "POST",
-    headers: {
-      authorization: "0896f9f7-5274-4e46-b933-ae3efb20bf7b",
-      "Content-Type": "application/json",
-    },
+    headers: config.headers,
     body: JSON.stringify({
       name: cardObj.name,
       link: cardObj.link,
@@ -237,3 +236,12 @@ function addNewCard(cardObj) {
     console.log("Proeb3");
   });
 }
+
+// function cardDel(){
+// fetch(`${config.baseUrl}/cards/${}`, {
+//     method: "DELETE",
+//     headers: config.headers,
+// })
+
+
+// }

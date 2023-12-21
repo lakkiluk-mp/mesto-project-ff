@@ -15,13 +15,15 @@ function createCard(cardsItem, handleCardDelete, addDeletLiketoCard, openPopupIm
   cardImage.src = cardsItem.link;
   cardImage.alt = cardsItem.name;
   cardTitle.textContent = cardsItem.name;
-  // console.log(userID)
-  // console.log(cardID)
+   //console.log(userID)
+  //  console.log(cardID)
   if(userID!==cardID){
      cardDelButt.remove() 
   }
 
-  cardDelButt.addEventListener("click", handleCardDelete);
+  cardDelButt.addEventListener("click",(el)=>{
+
+   handleCardDelete(el,cardID)});
   // добавление лайка по аналогу с удалением
   cardLikeButt.addEventListener("click", addDeletLiketoCard);
   //добавление обработчика открытия картинки, передача url,alt
@@ -35,10 +37,32 @@ function createCard(cardsItem, handleCardDelete, addDeletLiketoCard, openPopupIm
 }
 
 //функция удаления карточки
-function handleCardDelete(element) {
+function handleCardDelete(element,cardOwnerId) {
   const deletingCard = element.target.closest(".places__item.card");
   deletingCard.remove();
+  cardDel(cardOwnerId)
+  console.log(cardOwnerId)
 }
+
+const config = {
+  baseUrl: 'https://mesto.nomoreparties.co/v1/wff-cohort-3',
+  headers: {
+    authorization: '0896f9f7-5274-4e46-b933-ae3efb20bf7b',
+    'Content-Type': 'application/json'
+  }
+}
+
+
+function cardDel(cardOwnerId){
+  fetch(`${config.baseUrl}/cards/${cardOwnerId}`, {
+      method: "DELETE",
+      headers: config.headers,
+  })
+  
+  
+  }
+
+
 //функция добавления карточки в разметку
 function renderCard(cardElement) {
   cardContainer.append(cardElement);

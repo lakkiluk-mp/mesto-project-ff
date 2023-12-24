@@ -1,4 +1,6 @@
 .profile__image {
+  position: relative;
+  z-index: 2;
   width: 120px;
   height: 120px;
   -webkit-border-radius: 50%;
@@ -20,3 +22,33 @@
     margin-right: 0;
   }
 }
+
+.profile__image:hover .profile__image-topper{
+  background-color:rgba(0, 0, 0, 0.8);
+  /* opacity:0.2; */
+  transition: 0.2s;
+  width: 100%;
+  height: 100%;
+}
+
+.profile__image-edt::after{
+  position: absolute;
+  content:'';
+  display: block;
+  width: 27px;
+  height:27px;
+  left:40%;
+  top:40%;
+ background-image:url(../../../images/Vector.svg);
+ background-repeat: no-repeat;
+ /* opacity: 1; */
+ visibility: hidden;
+ z-index: 3;
+}
+.profile__image:hover .profile__image-edt::after{
+  visibility: visible;
+  z-index: 4;
+}
+
+
+

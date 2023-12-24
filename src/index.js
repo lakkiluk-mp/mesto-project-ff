@@ -5,11 +5,21 @@ import {
   handleCardDelete,
   renderCard,
   renderCardStart,
-  addDeletLikeToCard,
+  addLikeToCard,
+  deletLikeToCard,
   cardTemplate,
 } from "./scripts/card.js";
 import { openModal, closeModal } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
+
+import {
+  addNewCard,
+  editProfile,
+  getCards,
+  updateProfile,
+  editAvatar,
+} from "./scripts/api.js";
+
 // редактирование шапки pop-up DOM
 const popupTypeEdit = document.querySelector(".popup_type_edit");
 const profileEditButton = document.querySelector(".profile__edit-button");
@@ -22,12 +32,50 @@ const addCardButton = document.querySelector(".profile__add-button");
 const popUpImage = document.querySelector(".popup_type_image");
 const popUpImgUrl = document.querySelector(".popup__image");
 const popUpImgAlt = document.querySelector(".popup__caption");
+
+// DOM поля формы добавление карточки
+const formCard = popNewCard.querySelector(".popup__form");
+const cardNameInput = popNewCard.querySelector(".popup__input_type_card-name");
+const cardUrlInput = popNewCard.querySelector(".popup__input_type_url");
+
 //добавление плавности при открытии
 popupTypeEdit.classList.add("popup_is-animated");
 popNewCard.classList.add("popup_is-animated");
 popUpImage.classList.add("popup_is-animated");
 
-let userID
+// DOM поля формы шапка
+const nameInput = popupTypeEdit.querySelector(".popup__input_type_name");
+const jobInput = popupTypeEdit.querySelector(".popup__input_type_description");
+
+//DOM добавление аватара
+const popUpAvatar = document.querySelector(".popup_type_avatar-profile");
+const avatarEditButton = document.querySelector(".profile__image");
+const avatarUrl = document.querySelector(".popup__input_type_url-avatar");
+
+// DOM текущее имя и вид деятельности
+const currentName = document.querySelector(".profile__title");
+const currentJob = document.querySelector(".profile__description");
+const currentAvatar = document.querySelector(".profile__image");
+
+let userID;
+//открытие окна добавления аватара
+avatarEditButton.addEventListener("click", () => {
+  openModal(popUpAvatar);
+  enableValidation(validationConfig);
+  clearValidation(popUpAvatar, validationConfig);
+});
+
+popUpAvatar.addEventListener("submit", submitAvatarForm);
+
+//функция добавления аватара
+function submitAvatarForm(evt) {
+  evt.preventDefault();
+
+  editAvatar(avatarUrl.value);
+  currentAvatar.style.backgroundImage = `url(${avatarUrl.value})`;
+
+  closeModal(popUpAvatar);
+}
 
 //открытие окна редактирования шапки и обновление полей форм
 profileEditButton.addEventListener("click", () => {
@@ -51,38 +99,22 @@ function openPopupImage(link, name) {
   openModal(popUpImage);
 }
 
-// DOM текущее имя и вид деятельности
-const currentName = document.querySelector(".profile__title");
-const currentJob = document.querySelector(".profile__description");
-const currentAvatar = document.querySelector(".profile__image");
-
 // фунция передачи текущего значения в поля формы редактирования шапки (вызывается при открытии)
 function fillPopupEditInputs() {
   nameInput.value = currentName.textContent;
   jobInput.value = currentJob.textContent;
 }
 
-// DOM поля формы шапка
-const nameInput = popupTypeEdit.querySelector(".popup__input_type_name");
-const jobInput = popupTypeEdit.querySelector(".popup__input_type_description");
-
 // функция изменения в форме edit текущего имени и вида деятельности + закрытие POP-UP
 function handleEditFormSubmit(evt) {
   evt.preventDefault();
   currentName.textContent = nameInput.value;
   currentJob.textContent = jobInput.value;
-  editProfile();
+  editProfile(nameInput.value, jobInput.value);
   closeModal(popupTypeEdit);
 }
 
 popupTypeEdit.addEventListener("submit", handleEditFormSubmit);
-
-// DOM поля формы добавление карточки
-const formCard = popNewCard.querySelector(".popup__form");
-const cardNameInput = popNewCard.querySelector(".popup__input_type_card-name");
-const cardUrlInput = popNewCard.querySelector(".popup__input_type_url");
-//like counter
-const likeCounter = cardTemplate.querySelector(".card__like-counter");
 
 // функция добаление новой карточки через форму
 function submitCardForm(evt) {
@@ -91,32 +123,26 @@ function submitCardForm(evt) {
   closeModal(popNewCard);
   formCard.reset(evt);
   clearValidation(popNewCard, validationConfig);
-  // console.log(newObj.name)
-  addNewCard(newObj);
-
-  renderCardStart(
-    createCard(
-      newObj,
-      handleCardDelete,
-      addDeletLikeToCard,
-      openPopupImage,
-      userID,
-      userID
-    )
-  );
+  addNewCard(newObj).then((cardData) => {
+    renderCardStart(
+      createCard(
+        cardData,
+        handleCardDelete,
+        addLikeToCard,
+        deletLikeToCard,
+        openPopupImage,
+        userID,
+        cardData.owner._id,
+        cardData._id,
+        cardData.likes.length
+      )
+    );
+  });
 }
 
 popNewCard.addEventListener("submit", submitCardForm);
 
-// initialCards.forEach((card) => {
-//   renderCard(
-//     createCard(card, handleCardDelete, addDeletLikeToCard, openPopupImage)
-//   );
-// });
-
 ////////////////
-;
-
 const validationConfig = {
   formSelector: ".popup__form",
   inputSelector: ".popup__input",
@@ -126,122 +152,26 @@ const validationConfig = {
   errorClass: "popup__input_error-active",
 };
 
+Promise.all([updateProfile(), getCards()]).then(([userData, cardsData]) => {
+  currentName.textContent = userData.name;
+  currentJob.textContent = userData.about;
+  currentAvatar.style.backgroundImage = `url('${userData.avatar}')`;
+  userID = userData._id;
 
-
-
-const config = {
-  baseUrl: 'https://mesto.nomoreparties.co/v1/wff-cohort-3',
-  headers: {
-    authorization: '0896f9f7-5274-4e46-b933-ae3efb20bf7b',
-    'Content-Type': 'application/json'
-  }
-}
-//обновление информации о пользователе
-function updateProfile() {
-  fetch(`${config.baseUrl}/users/me`, {
-    headers: config.headers
-  })
-    .then((res) => {
-      return res.json();
-    })
-    .then((data) => {
-      currentName.textContent = data.name;
-      currentJob.textContent = data.about;
-      currentAvatar.style.backgroundImage = `url('${data.avatar}')`;
-      userID = data._id;
-    })
-    .catch((err) => {
-      console.log("Proeb1");
-    });
-}
-
-updateProfile();
-
-// Загрузка карточек  с сервера
-function getCards() {
-  fetch(`${config.baseUrl}/cards`, {
-    headers: config.headers
-  })
-    .then((res) => {
-      return res.json();
-    })
-
-    .then((data) => {
-      data.forEach((card) => {
-console.log(card.owner._id)
-        renderCard(
-          createCard(
-            card,
-            handleCardDelete,
-            addDeletLikeToCard,
-            openPopupImage,
-            userID,
-            card.owner._id
-          )
-        );
-      });
-    })
-    .catch((err) => {
-      console.log("Proeb2");
-    });
-}
-
-getCards();
-
-//отображение лайков
-function getCardsLike() {
-  fetch(`${config.baseUrl}/cards`, {
-    headers: config.headers
-  })
-    .then((res) => {
-      return res.json();
-    })
-
-    .then((data) => {
-      data.forEach((card) => {
-        likeCounter.textContent = card.likes.length;
-      });
-    })
-    .catch((err) => {
-      console.log("Proeb5");
-    });
-}
-getCardsLike();
-
-
-//Редактирование профиля
-function editProfile() {
-fetch(`${config.baseUrl}/users/me`, {
-    method: "PATCH",
-    headers: config.headers,
-    body: JSON.stringify({
-      name: nameInput.value,
-      about: jobInput.value,
-    }),
-  }).catch((err) => {
-    console.log("Proeb4");
+  cardsData.forEach((card) => {
+    // console.log(card)
+    renderCard(
+      createCard(
+        card,
+        handleCardDelete,
+        addLikeToCard,
+        deletLikeToCard,
+        openPopupImage,
+        userID,
+        card.owner._id,
+        card._id,
+        card.likes.length
+      )
+    );
   });
-}
-
-//добавление новой карточки
-function addNewCard(cardObj) {
-fetch(`${config.baseUrl}/cards`, {
-    method: "POST",
-    headers: config.headers,
-    body: JSON.stringify({
-      name: cardObj.name,
-      link: cardObj.link,
-    }),
-  }).catch((err) => {
-    console.log("Proeb3");
-  });
-}
-
-// function cardDel(){
-// fetch(`${config.baseUrl}/cards/${}`, {
-//     method: "DELETE",
-//     headers: config.headers,
-// })
-
-
-// }
+});

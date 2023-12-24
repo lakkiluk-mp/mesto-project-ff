@@ -20,7 +20,9 @@
           <div
             class="profile__image"
             style="background-image: url('<%=require(`./images/avatar.jpg`)%>')"
-          ></div>
+          ><div class="profile__image-topper"></div>
+            <div class="profile__image-edt"></div>
+          </div>
           <div class="profile__info">
             <h1 class="profile__title">Жак-Ив Кусто</h1>
             <button class="profile__edit-button" type="button"></button>
@@ -81,34 +83,34 @@
         <div class="popup__content">
           <button type="button" class="popup__close"></button>
           <h3 class="popup__title">Новое место</h3>
-          
+
           <form class="popup__form" name="new-place" novalidate>
             <label class="form_field">
-            <input
-              id="new-place-input"
-              type="text"
-              name="place-name"
-              class="popup__input popup__input_type_card-name"
-              placeholder="Название"
-              minlength="2"
-              maxlength="30"
-              pattern="^[a-zA-Zа-яА-Я\s\-]+$"
-              data-error-message="Разрешены только латинские и киррилические буквы, знаки дифиса и пробелы"
-              required
-            />
-            <span class="form__input-error new-place-input-error"></span>
-          </label>
-          <label class="form_field">
-            <input
-              id ='link-input'
-              type="url"
-              name="link"
-              class="popup__input popup__input_type_url"
-              placeholder="Ссылка на картинку"
-              required
-            />
-            <span class="form__input-error link-input-error"></span>
-          </label>
+              <input
+                id="new-place-input"
+                type="text"
+                name="place-name"
+                class="popup__input popup__input_type_card-name"
+                placeholder="Название"
+                minlength="2"
+                maxlength="30"
+                pattern="^[a-zA-Zа-яА-Я\s\-]+$"
+                data-error-message="Разрешены только латинские и киррилические буквы, знаки дифиса и пробелы"
+                required
+              />
+              <span class="form__input-error new-place-input-error"></span>
+            </label>
+            <label class="form_field">
+              <input
+                id="link-input"
+                type="url"
+                name="link"
+                class="popup__input popup__input_type_url"
+                placeholder="Ссылка на картинку"
+                required
+              />
+              <span class="form__input-error link-input-error"></span>
+            </label>
             <button type="submit" class="button popup__button">
               Сохранить
             </button>
@@ -124,16 +126,38 @@
       </div>
     </div>
 
+    <div class="popup popup_type_avatar-profile">
+      <div class="popup__content">
+        <button type="button" class="popup__close"></button>
+        <h3 class="popup__title">Обновить аватар</h3>
+
+        <form class="popup__form" name="avatar" novalidate>
+          <label class="form_field">
+            <input
+              id="avatar_link-input"
+              type="url"
+              name="avatar_link"
+              class="popup__input popup__input_type_url-avatar"
+              placeholder="Ссылка на картинку"
+              required
+            />
+            <span class="form__input-error avatar_link-input-error"></span>
+          </label>
+          <button type="submit" class="button popup__button">Сохранить</button>
+        </form>
+      </div>
+    </div>
+
     <template id="card-template">
       <li class="places__item card">
         <img class="card__image" src="" alt="" />
         <button type="button" class="card__delete-button"></button>
         <div class="card__description">
           <h2 class="card__title"></h2>
-           <div class="card__like">
-          <button type="button" class="card__like-button"></button>
-          <div class='card__like-counter'>0</div>
-        </div>
+          <div class="card__like">
+            <button type="button" class="card__like-button"></button>
+            <div class="card__like-counter"></div>
+          </div>
         </div>
       </li>
     </template>

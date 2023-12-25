@@ -20,7 +20,8 @@
           <div
             class="profile__image"
             style="background-image: url('<%=require(`./images/avatar.jpg`)%>')"
-          ><div class="profile__image-topper"></div>
+          >
+            <div class="profile__image-topper"></div>
             <div class="profile__image-edt"></div>
           </div>
           <div class="profile__info">
@@ -131,7 +132,7 @@
         <button type="button" class="popup__close"></button>
         <h3 class="popup__title">Обновить аватар</h3>
 
-        <form class="popup__form" name="avatar" novalidate>
+        <form class="popup__form popup__form-avatar" name="avatar" novalidate>
           <label class="form_field">
             <input
               id="avatar_link-input"
@@ -147,7 +148,7 @@
         </form>
       </div>
     </div>
-
+    
     <template id="card-template">
       <li class="places__item card">
         <img class="card__image" src="" alt="" />

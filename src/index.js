@@ -7,7 +7,6 @@ import {
   renderCardStart,
   addLikeToCard,
   deletLikeToCard,
-  cardTemplate,
 } from "./scripts/card.js";
 import { openModal, closeModal } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
@@ -56,26 +55,14 @@ const avatarUrl = document.querySelector(".popup__input_type_url-avatar");
 const currentName = document.querySelector(".profile__title");
 const currentJob = document.querySelector(".profile__description");
 const currentAvatar = document.querySelector(".profile__image");
-
+const avatarForm = document.querySelector(".popup__form-avatar");
 let userID;
+
 //открытие окна добавления аватара
 avatarEditButton.addEventListener("click", () => {
   openModal(popUpAvatar);
   enableValidation(validationConfig);
-  clearValidation(popUpAvatar, validationConfig);
 });
-
-popUpAvatar.addEventListener("submit", submitAvatarForm);
-
-//функция добавления аватара
-function submitAvatarForm(evt) {
-  evt.preventDefault();
-
-  editAvatar(avatarUrl.value);
-  currentAvatar.style.backgroundImage = `url(${avatarUrl.value})`;
-
-  closeModal(popUpAvatar);
-}
 
 //открытие окна редактирования шапки и обновление полей форм
 profileEditButton.addEventListener("click", () => {
@@ -105,44 +92,79 @@ function fillPopupEditInputs() {
   jobInput.value = currentJob.textContent;
 }
 
+//функция добавления аватара
+function submitAvatarForm(evt) {
+  const saveButton = popUpAvatar.querySelector(".popup__button");
+  saveButton.textContent = "Сохранение...";
+  evt.preventDefault();
+  currentAvatar.style.backgroundImage = `url(${avatarUrl.value})`;
+  editAvatar(avatarUrl.value)
+    .then((data) => {
+      closeModal(popUpAvatar);
+      avatarForm.reset();
+    })
+    .catch((err) => {
+      console.log("Ошибка при обновлении данных: ", err);
+    })
+    .finally(() => (saveButton.textContent = "Сохранить"));
+}
+
+popUpAvatar.addEventListener("submit", submitAvatarForm);
+
 // функция изменения в форме edit текущего имени и вида деятельности + закрытие POP-UP
 function handleEditFormSubmit(evt) {
+  const saveButton = popupTypeEdit.querySelector(".popup__button");
+  saveButton.textContent = "Сохранение...";
   evt.preventDefault();
-  currentName.textContent = nameInput.value;
-  currentJob.textContent = jobInput.value;
-  editProfile(nameInput.value, jobInput.value);
-  closeModal(popupTypeEdit);
+  editProfile(nameInput.value, jobInput.value)
+    .then((data) => {
+      currentName.textContent = nameInput.value;
+      currentJob.textContent = jobInput.value;
+      closeModal(popupTypeEdit);
+    })
+    .catch((err) => {
+      console.log("Ошибка при обновлении данных: ", err);
+    })
+    .finally(() => (saveButton.textContent = "Сохранить"));
 }
 
 popupTypeEdit.addEventListener("submit", handleEditFormSubmit);
 
+
 // функция добаление новой карточки через форму
 function submitCardForm(evt) {
+  const saveButton = popNewCard.querySelector(".popup__button");
+  saveButton.textContent = "Сохранение...";
   evt.preventDefault();
   const newObj = { name: cardNameInput.value, link: cardUrlInput.value };
-  closeModal(popNewCard);
-  formCard.reset(evt);
-  clearValidation(popNewCard, validationConfig);
-  addNewCard(newObj).then((cardData) => {
-    renderCardStart(
-      createCard(
-        cardData,
-        handleCardDelete,
-        addLikeToCard,
-        deletLikeToCard,
-        openPopupImage,
-        userID,
-        cardData.owner._id,
-        cardData._id,
-        cardData.likes.length
-      )
-    );
-  });
+  addNewCard(newObj)
+    .then((cardData) => {
+      renderCardStart(
+        createCard(
+          cardData,
+          handleCardDelete,
+          addLikeToCard,
+          deletLikeToCard,
+          openPopupImage,
+          userID,
+          cardData.owner._id,
+          cardData._id,
+          cardData.likes.length
+        )
+      );
+      formCard.reset(evt);
+      clearValidation(popNewCard, validationConfig);
+      closeModal(popNewCard);
+    })
+    .catch((err) => {
+      console.log("Ошибка при обновлении данных: ", err);
+    })
+    .finally(() => (saveButton.textContent = "Сохранить"));
 }
 
 popNewCard.addEventListener("submit", submitCardForm);
 
-////////////////
+
 const validationConfig = {
   formSelector: ".popup__form",
   inputSelector: ".popup__input",
@@ -159,7 +181,6 @@ Promise.all([updateProfile(), getCards()]).then(([userData, cardsData]) => {
   userID = userData._id;
 
   cardsData.forEach((card) => {
-    // console.log(card)
     renderCard(
       createCard(
         card,

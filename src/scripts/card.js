@@ -28,7 +28,7 @@ function createCard(
   cardImage.src = cardsItem.link;
   cardImage.alt = cardsItem.name;
   cardTitle.textContent = cardsItem.name;
-  //удаление кнопки лайка у не своей карточки 
+  //добавление кнопки удаления только своей карточке (проверка)
   if (userID !== cardOwnerID) {
     cardDelButt.remove();
   }
@@ -43,7 +43,7 @@ function createCard(
   cardDelButt.addEventListener("click", (el) => {
     handleCardDelete(el, cardID);
   });
-  // добавление лайка по аналогу с удалением
+  // добавление лайка
   cardLikeButt.addEventListener("click", (el) => {
     if (!cardLikeButt.classList.contains("card__like-button_is-active")) {
       addLikeToCard(el, cardID);

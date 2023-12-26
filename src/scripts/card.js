@@ -63,4 +63,4 @@ function toggleLikeToCard(cardLikeButt, dataLikeCounter, likeCounter) {
   likeCounter.textContent = dataLikeCounter;
 }
 
-export { createCard, handleDelete, cardTemplate, toggleLikeToCard };
+export { createCard, handleDelete,toggleLikeToCard };

@@ -67,21 +67,18 @@ function renderCardStart(cardElement) {
 //открытие окна добавления аватара
 avatarEditButton.addEventListener("click", () => {
   openModal(popUpAvatar);
-  // enableValidation(validationConfig);
 });
 
 //открытие окна редактирования шапки и обновление полей форм
 profileEditButton.addEventListener("click", () => {
   openModal(popupTypeEdit);
   fillPopupEditInputs();
-  // enableValidation(validationConfig);
   clearValidation(popupTypeEdit, validationConfig);
 });
 
 //открытие окна добавления карточки
 addCardButton.addEventListener("click", () => {
   openModal(popNewCard);
-  // enableValidation(validationConfig);
 });
 
 //функция открытия окна с картинкой
@@ -106,7 +103,7 @@ function submitAvatarForm(evt) {
   // currentAvatar.style.backgroundImage = `url(${avatarUrl.value})`;
   editAvatar(avatarUrl.value)
     .then((data) => {
-      currentAvatar.style.backgroundImage = `url(${avatarUrl.value})`;
+      currentAvatar.style.backgroundImage = `url(${data.avatar})`;
       closeModal(popUpAvatar);
       avatarForm.reset();
     })
@@ -125,8 +122,8 @@ function handleEditFormSubmit(evt) {
   evt.preventDefault();
   editProfile(nameInput.value, jobInput.value)
     .then((data) => {
-      currentName.textContent = nameInput.value;
-      currentJob.textContent = jobInput.value;
+      currentName.textContent = data.name;
+      currentJob.textContent = data.about;
       closeModal(popupTypeEdit);
     })
     .catch((err) => {

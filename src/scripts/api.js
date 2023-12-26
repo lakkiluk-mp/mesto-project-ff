@@ -17,23 +17,14 @@ function errorCatch(res) {
 function updateProfile() {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: config.headers,
-  })
-    .then((res) => res.json())
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(errorCatch);
 }
 
 // Загрузка карточек  с сервера
 function getCards() {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers,
-  })
-    .then(errorCatch)
-
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(errorCatch);
 }
 
 //Редактирование профиля
@@ -45,11 +36,7 @@ function editProfile(nameInput, jobInput) {
       name: nameInput,
       about: jobInput,
     }),
-  })
-    .then(errorCatch)
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(errorCatch);
 }
 
 //добавление аватара
@@ -60,11 +47,7 @@ function editAvatar(avatarInput) {
     body: JSON.stringify({
       avatar: avatarInput,
     }),
-  })
-    .then(errorCatch)
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(errorCatch);
 }
 
 //добавление новой карточки
@@ -76,20 +59,14 @@ function addNewCard(cardObj) {
       name: cardObj.name,
       link: cardObj.link,
     }),
-  })
-    .then(errorCatch)
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(errorCatch);
 }
-//удаление карточки 
+//удаление карточки
 function cardDel(cardID) {
   return fetch(`${config.baseUrl}/cards/${cardID}`, {
     method: "DELETE",
     headers: config.headers,
-  }).catch((err) => {
-    console.log(err);
-  });
+  }).then(errorCatch);
 }
 
 //удаление лайка
@@ -104,7 +81,7 @@ function addLike(cardID) {
   return fetch(`${config.baseUrl}/cards/likes/${cardID}`, {
     method: "PUT",
     headers: config.headers,
-  });
+  }).then(errorCatch);
 }
 
 export {

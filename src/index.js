@@ -53,8 +53,14 @@ const currentJob = document.querySelector(".profile__description");
 const currentAvatar = document.querySelector(".profile__image");
 const avatarForm = document.querySelector(".popup__form-avatar");
 let userID;
+let cardIdRender
+let cardsItemRender
 // добавление в дом места в разметке куда будут добавляться карточки
 const cardContainer = document.querySelector(".places__list");
+
+//pop-up удаления карточки
+const openDelModal = document.querySelector(".popup_type_card-delete");
+
 // функция добавления карточки в разметку
 function renderCard(cardElement) {
   cardContainer.append(cardElement);
@@ -100,7 +106,6 @@ function submitAvatarForm(evt) {
   const saveButton = popUpAvatar.querySelector(".popup__button");
   saveButton.textContent = "Сохранение...";
   evt.preventDefault();
-  // currentAvatar.style.backgroundImage = `url(${avatarUrl.value})`;
   editAvatar(avatarUrl.value)
     .then((data) => {
       currentAvatar.style.backgroundImage = `url(${data.avatar})`;
@@ -114,6 +119,30 @@ function submitAvatarForm(evt) {
 }
 
 popUpAvatar.addEventListener("submit", submitAvatarForm);
+
+function handleCardDelete(cardID, cardsItem) {
+  openModal(openDelModal);
+  cardIdRender = cardID;
+  cardsItemRender = cardsItem;
+}
+
+openDelModal.addEventListener("submit",()=>{
+  modalCardDelete(cardIdRender, cardsItemRender)})
+
+function modalCardDelete(cardID, cardsItem) {
+    const submitButton = openDelModal.querySelector(".popup__button");
+    submitButton.textContent = "Удаление...";
+    cardDel(cardID)
+      .then(() => {
+        handleDelete(cardsItem);
+        closeModal(openDelModal);
+      })
+      .catch((err) => {
+        console.log("Ошибка тут", err);
+      })
+      .finally(() => (submitButton.textContent = "Ок"));
+  }
+
 
 // функция изменения в форме edit текущего имени и вида деятельности + закрытие POP-UP
 function handleEditFormSubmit(evt) {
@@ -209,12 +238,4 @@ function handleLike(cardID, cardLikeButt, likeCounter) {
   }
 }
 
-function handleCardDelete(cardID, cardsItem) {
-  cardDel(cardID)
-    .then(() => {
-      handleDelete(cardsItem);
-    })
-    .catch((err) => {
-      console.log("Ошибка тут", err);
-    });
-}
+

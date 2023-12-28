@@ -7,7 +7,8 @@ function createCard(
   handleCardDelete,
   openPopupImage,
   userID,
-  handleLike
+  handleLike,
+  // modalCardDelete
 ) {
   const cardElement = cardTemplate
     .querySelector(".places__item.card")
@@ -38,8 +39,10 @@ function createCard(
   likeCounter.textContent = cardLikes;
 
   cardDelButt.addEventListener("click", () => {
+    // modalCardDelete()
     handleCardDelete(cardID, cardElement);
   });
+
 
   cardLikeButt.addEventListener("click", (el) => {
     handleLike(cardID, cardLikeButt, likeCounter);
